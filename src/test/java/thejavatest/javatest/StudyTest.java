@@ -4,16 +4,22 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//언더스코어를 빈 공백으로 채워주는 전략
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StudyTest {
 
     //junit5이상부터는 클래스나 메소드에 public일 필요가 없다.
     @Test
-    void create(){
+    @DisplayName("스터디 만들기")
+    void create_new_study(){
         Study study = new Study();
         assertNotNull(study);
     }
+
+
     @Test
-    void create1(){
+//    @Disabled //실행하고 싶지 않을때
+    void create_new_study_again(){
         System.out.println("create1");
     }
 
