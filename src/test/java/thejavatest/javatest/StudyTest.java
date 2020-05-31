@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 //언더스코어를 빈 공백으로 채워주는 전략
@@ -53,6 +54,21 @@ class StudyTest {
             new Study(10);
             Thread.sleep(1000);
         });
+        /*즉시 끝내고 싶을때
+        *코드블럭을 별도의 쓰레드를 실행하기때문에
+        * TODO ThreadLocal 예상치 못한 결과가 발생할수도 있다.
+        *  스프링 트랜잭션 처리같은경우에는 쓰레드에서 공유가 되질 않기때문에
+        *  스프링이 만든 트랜잭션 처리가 되지 않을수가 있다.
+        * 실제로는 트랜잭셔널한 건 롤백을 하는데
+        * 만약 이경우 디비에 반영이 될수도 있다.
+        *
+        * */
+        assertTimeoutPreemptively(Duration.ofSeconds(100), () -> {
+            new Study(10);
+            Thread.sleep(1000);
+        });
+
+        assertThat(study.getLimit()).isEqualTo(-10);
     }
 
     //테스트가 모두 실행될때 딱 한번 private x default o return type x static
