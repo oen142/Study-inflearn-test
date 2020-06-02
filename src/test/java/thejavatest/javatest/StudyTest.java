@@ -1,12 +1,15 @@
 package thejavatest.javatest;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.time.Duration;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 //언더스코어를 빈 공백으로 채워주는 전략
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -14,6 +17,7 @@ class StudyTest {
 
     //junit5이상부터는 클래스나 메소드에 public일 필요가 없다.
     @Test
+    @Tag("fast")
     @DisplayName("스터디 만들기")
     void create_new_study() {
         Study study = new Study(-10);
@@ -41,6 +45,7 @@ class StudyTest {
 
 
     @Test
+    @Tag("slow")
 //    @Disabled //실행하고 싶지 않을때
     void create_new_study_again() {
 
@@ -55,14 +60,14 @@ class StudyTest {
             Thread.sleep(1000);
         });
         /*즉시 끝내고 싶을때
-        *코드블럭을 별도의 쓰레드를 실행하기때문에
-        * TODO ThreadLocal 예상치 못한 결과가 발생할수도 있다.
-        *  스프링 트랜잭션 처리같은경우에는 쓰레드에서 공유가 되질 않기때문에
-        *  스프링이 만든 트랜잭션 처리가 되지 않을수가 있다.
-        * 실제로는 트랜잭셔널한 건 롤백을 하는데
-        * 만약 이경우 디비에 반영이 될수도 있다.
-        *
-        * */
+         *코드블럭을 별도의 쓰레드를 실행하기때문에
+         * TODO ThreadLocal 예상치 못한 결과가 발생할수도 있다.
+         *  스프링 트랜잭션 처리같은경우에는 쓰레드에서 공유가 되질 않기때문에
+         *  스프링이 만든 트랜잭션 처리가 되지 않을수가 있다.
+         * 실제로는 트랜잭셔널한 건 롤백을 하는데
+         * 만약 이경우 디비에 반영이 될수도 있다.
+         *
+         * */
         assertTimeoutPreemptively(Duration.ofSeconds(100), () -> {
             new Study(10);
             Thread.sleep(1000);
@@ -70,6 +75,39 @@ class StudyTest {
 
         assertThat(study.getLimit()).isEqualTo(-10);
     }
+
+    /*
+     * 특정한 자바변수 환경변수 OS같은데서 실행해야 한다 할때 만드는코드
+     *
+     * */
+    @Test
+    void testOs() {
+
+        String test_env = System.getenv("TEST_ENV");
+        System.out.println(test_env);
+        assumeTrue("LOCAL".equalsIgnoreCase(test_env));
+
+        assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
+            //TODO
+        });
+        assumingThat("TEST".equalsIgnoreCase(test_env), () -> {
+            //TODO
+        });
+
+    }
+
+    @Test
+    @EnabledOnOs({OS.MAC, OS.LINUX})
+    @EnabledOnJre({JRE.JAVA_8})
+    @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")
+    void annoTest() {
+        //TODO OS , Jre 어노테이션에 따라 달라짐
+    }
+
+    /*
+     * 테스트를 그룹화 하는것이 Tag이다.
+     *
+     * */
 
     //테스트가 모두 실행될때 딱 한번 private x default o return type x static
     @BeforeAll
