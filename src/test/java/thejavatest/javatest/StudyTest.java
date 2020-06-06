@@ -2,7 +2,9 @@ package thejavatest.javatest;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 //언더스코어를 빈 공백으로 채워주는 전략
+@ExtendWith(FindSlowTestExtension.class)//선언적 등록방
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StudyTest {
 
@@ -178,10 +181,10 @@ class StudyTest {
     }
 
     /*
-    * 반드시 스태틱 이너 클래스
-    * 또는
-    * 퍼블릭 클래스
-    * */
+     * 반드시 스태틱 이너 클래스
+     * 또는
+     * 퍼블릭 클래스
+     * */
     static class StudyAggregator implements ArgumentsAggregator {
 
         @Override
@@ -200,7 +203,71 @@ class StudyTest {
         }
     }
 
+    /*
+     * 테스트 인스턴스
+     * 기본 전략은 테스트 메소드마다 생성한다.
+     * this 를 할때마다 값이 다른걸 알수있다.
+     * 테스트 간의 의존성을 없애기 위해서
+     * Junit 5부터는 테스트 마다 다른게아니라 공유할수도 있다.
+     * TestInstance(Lifecycle.PER_CLASS)
+     * */
+    int value = 1;
+
+    @Test
+    public void testInstance1() {
+        System.out.println("value = " + value++);
+    }
+
+    @Test
+
+    public void testInstance2() {
+
+        System.out.println("value = " + value++);
+    }
+    /*
+     * 정해진 테스트 순서는 있다.
+     * 그 순서에 의존해서는 안된다.
+     * 순서를 일부러 명확히 드러내지 않은 의도는
+     * 제대로 작성된 테스트는 다른 단위 테스트랑 독립적이게 영향을 주면 안된다.
+     * 경우에 따라서는 원하는 순서대로 테스트를 하고 싶다.
+     * @TestMethodOrder(OrderAnnotation)
+     *
+     * @Order(int)
+     * */
+
     //테스트가 모두 실행될때 딱 한번 private x default o return type x static
+
+    /*
+     * 테스트 인스턴스가 클래스 단위이면 static일 필요가 없다.
+     * */
+
+
+    /*
+     * 확장 모델
+     * Runwith , testRule MethodRule
+     *
+     * Extension
+     * 확장팩 등록방법
+     * 선언적인 등록 @TxtendWith
+     * 프로그래밍 등록 @RegisterExtension
+     * 자동 등록 자바 ServiceLoader
+     *
+     * 인스턴스를 만드는 방법을 커스텀 할수가 없다. 기본 디폴트 생성자로 생성하는거임
+     * 쓰레드 홀드를 매번 바꾸고싶으면, 생성자에서 받아오는거다.
+     * */
+
+    /*
+    * 이 방법은 기본적으로 꺼져있다.
+    * 프로퍼티로 등록이 가능하지만,
+    * 명시적으로 선언해주는것이 좋다.
+    * */
+    @RegisterExtension
+    static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
+
+    @Test
+    public void slowTest() throws InterruptedException {
+        Thread.sleep(1005L);
+    }
     @BeforeAll
     static void beforeAll() {
         System.out.println("beforeAll");
