@@ -264,6 +264,13 @@ class StudyTest {
     @RegisterExtension
     static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
 
+    /*
+    * 스프링 부트를 기본적으로 만드면
+    * 빈티지 엔진이 모듈이 빠져있다.
+    * 의존성을 빼주면
+    * Junit4로 가능하다.
+    * */
+
     @Test
     public void slowTest() throws InterruptedException {
         Thread.sleep(1005L);
