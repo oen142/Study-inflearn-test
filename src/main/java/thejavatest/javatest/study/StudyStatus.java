@@ -1,4 +1,4 @@
-package thejavatest.javatest;
+package thejavatest.javatest.study;
 
 public enum StudyStatus {
 
