@@ -26,6 +26,9 @@ public class StudyService {
         if (member == null) {
             throw new IllegalArgumentException("");
         }
-        return studyRepository.save(study);
+        Study save = studyRepository.save(study);
+
+        memberService.notify(save);
+        return save;
     }
 }
