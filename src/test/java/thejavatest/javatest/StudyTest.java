@@ -14,7 +14,7 @@ import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.junit.jupiter.params.provider.*;
-import thejavatest.javatest.study.Study;
+import thejavatest.javatest.domain.Study;
 import thejavatest.javatest.study.StudyStatus;
 
 import java.time.Duration;
